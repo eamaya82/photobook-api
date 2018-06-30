@@ -1,9 +1,7 @@
 const router = require('express').Router();
 
-router.get('/posts', (req, res, next) => {
-  res.json({
-    message: 'Welcome to API',
-  });
-});
+const posts = require('./posts/routes');
+
+router.use('/posts', posts);
 
 module.exports = router;
