@@ -25,4 +25,7 @@ const post = new Schema(fields, {
   timestamps: true,
 });
 
-module.exports = mongoose.model('post', post);
+module.exports = {
+  Model: mongoose.model('post', post),
+  fields,
+};

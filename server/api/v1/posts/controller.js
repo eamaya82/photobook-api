@@ -1,7 +1,12 @@
-const Model = require('./model');
+const {
+  Model,
+  fields,
+} = require('./model');
 
 const {
   parsePaginationParams,
+  parseSortParams,
+  compactSortToStr,
 } = require('./../../../utils/');
 
 exports.id = (req, res, next, id) => {
@@ -32,9 +37,18 @@ exports.all = (req, res, next) => {
     skip,
     page,
   } = parsePaginationParams(query);
+  const {
+    sortBy,
+    direction,
+  } = parseSortParams(query, fields);
+  const sort = compactSortToStr(sortBy, direction);
 
   const count = Model.count();
-  const all = Model.find().skip(skip).limit(limit);
+  const all = Model
+    .find()
+    .sort(sort)
+    .skip(skip)
+    .limit(limit);
 
   Promise.all([count.exec(), all.exec()])
     .then((data) => {
@@ -50,6 +64,8 @@ exports.all = (req, res, next) => {
           total,
           page,
           pages,
+          sortBy,
+          direction,
         },
       });
     })
