@@ -1,14 +1,28 @@
+const Model = require('./model');
+
 exports.all = (req, res, next) => {
-  res.json([]);
+  Model.find()
+    .then((docs) => {
+      res.json(docs);
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
 };
 
 exports.create = (req, res, next) => {
   const {
     body,
   } = req;
-  res.json({
-    item: body,
-  });
+
+  const document = new Model(body);
+  document.save()
+    .then((doc) => {
+      res.json(doc);
+    })
+    .catch((err) => {
+      next(new Error(err));
+    });
 };
 
 exports.read = (req, res, next) => {
