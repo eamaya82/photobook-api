@@ -1,7 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 
+const database = require('./database');
 const api = require('./api/v1/');
+
+// Connect database
+database.connect();
 
 const app = express();
 
@@ -14,6 +18,8 @@ app.use(bodyParser.json());
 
 app.use('/api/v1', api);
 app.use('/api', api);
+
+
 
 app.use((req, res, next) => {
   res.status(404);
