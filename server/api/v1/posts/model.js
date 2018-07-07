@@ -19,13 +19,27 @@ const fields = {
     default: '',
     trim: true,
   },
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'comment',
+    required: true,
+  }],
 };
 
-const post = new Schema(fields, {
+const references = {
+  userId: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+    required: true,
+  },
+};
+
+const post = new Schema(Object.assign(fields, references), {
   timestamps: true,
 });
 
 module.exports = {
   Model: mongoose.model('post', post),
   fields,
+  references,
 };

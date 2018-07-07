@@ -1,7 +1,10 @@
 const {
   Model,
   fields,
+  references,
 } = require('./model');
+
+const referencesNames = Object.getOwnPropertyNames(references);
 
 const {
   parsePaginationParams,
@@ -10,7 +13,10 @@ const {
 } = require('./../../../utils/');
 
 exports.id = (req, res, next, id) => {
-  Model.findById(id)
+  Model
+    .findById(id)
+    .populate(referencesNames.join(' '))
+    .exec()
     .then((doc) => {
       if (doc) {
         req.doc = doc;
@@ -48,7 +54,8 @@ exports.all = (req, res, next) => {
     .find()
     .sort(sort)
     .skip(skip)
-    .limit(limit);
+    .limit(limit)
+    .populate(referencesNames.join(' '));
 
   Promise.all([count.exec(), all.exec()])
     .then((data) => {
