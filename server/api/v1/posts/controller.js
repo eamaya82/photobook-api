@@ -8,6 +8,7 @@ exports.id = (req, res, next, id) => {
         next();
       } else {
         res.json({
+          sucess: false,
           message: `${Model.modelName} not found`,
         });
       }
@@ -20,7 +21,10 @@ exports.id = (req, res, next, id) => {
 exports.all = (req, res, next) => {
   Model.find()
     .then((docs) => {
-      res.json(docs);
+      res.json({
+        success: true,
+        items: docs,
+      });
     })
     .catch((err) => {
       next(new Error(err));
@@ -35,7 +39,11 @@ exports.create = (req, res, next) => {
   const document = new Model(body);
   document.save()
     .then((doc) => {
-      res.json(doc);
+      res.status(201);
+      res.json({
+        success: true,
+        item: doc,
+      });
     })
     .catch((err) => {
       next(new Error(err));
@@ -47,7 +55,10 @@ exports.read = (req, res, next) => {
     doc,
   } = req;
 
-  res.json(doc);
+  res.json({
+    success: true,
+    item: doc,
+  });
 };
 
 exports.update = (req, res, next) => {
@@ -60,7 +71,10 @@ exports.update = (req, res, next) => {
 
   doc.save()
     .then((updated) => {
-      res.json(updated);
+      res.json({
+        success: true,
+        item: updated,
+      });
     })
     .catch((err) => {
       next(new Error(err));
@@ -73,8 +87,11 @@ exports.delete = (req, res, next) => {
   } = req;
 
   doc.remove()
-    .then((deleted) => {
-      res.json(deleted);
+    .then((removed) => {
+      res.json({
+        success: true,
+        item: removed,
+      });
     })
     .catch((err) => {
       next(new Error(err));
