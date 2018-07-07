@@ -1,5 +1,9 @@
 const Model = require('./model');
 
+const {
+  parsePaginationParams,
+} = require('./../../../utils/');
+
 exports.id = (req, res, next, id) => {
   Model.findById(id)
     .then((doc) => {
@@ -19,11 +23,34 @@ exports.id = (req, res, next, id) => {
 };
 
 exports.all = (req, res, next) => {
-  Model.find()
-    .then((docs) => {
+  const {
+    query,
+  } = req;
+
+  const {
+    limit,
+    skip,
+    page,
+  } = parsePaginationParams(query);
+
+  const count = Model.count();
+  const all = Model.find().skip(skip).limit(limit);
+
+  Promise.all([count.exec(), all.exec()])
+    .then((data) => {
+      const [total = 0, docs = []] = data;
+      const pages = Math.ceil(total / limit);
+
       res.json({
         success: true,
         items: docs,
+        meta: {
+          limit,
+          skip,
+          total,
+          page,
+          pages,
+        },
       });
     })
     .catch((err) => {

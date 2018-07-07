@@ -20,9 +20,13 @@ SERVER_PORT=3000
 
 ## RUN MONGO DB
 
-- cd ~
-- mongod --dbpath ~/data/db
+```
+cd ~
+mongod --dbpath ~/data/db
+```
 
 # GIT Commands
 
-- git config --global credential.help 'cache t=36000'
+```
+git config --global credential.help 'cache t=36000'
+```
