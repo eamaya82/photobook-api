@@ -19,11 +19,6 @@ const fields = {
     default: '',
     trim: true,
   },
-  comments: [{
-    type: Schema.Types.ObjectId,
-    ref: 'comment',
-    required: true,
-  }],
 };
 
 const references = {

@@ -10,6 +10,7 @@ const {
   parsePaginationParams,
   parseSortParams,
   compactSortToStr,
+  filterByNested,
 } = require('./../../../utils/');
 
 exports.id = (req, res, next, id) => {
@@ -36,6 +37,7 @@ exports.id = (req, res, next, id) => {
 exports.all = (req, res, next) => {
   const {
     query,
+    params,
   } = req;
 
   const {
@@ -48,14 +50,18 @@ exports.all = (req, res, next) => {
     direction,
   } = parseSortParams(query, fields);
   const sort = compactSortToStr(sortBy, direction);
+  const {
+    filters,
+    populate,
+  } = filterByNested(params, referencesNames);
 
   const count = Model.count();
   const all = Model
-    .find()
+    .find(filters)
     .sort(sort)
     .skip(skip)
     .limit(limit)
-    .populate(referencesNames.join(' '));
+    .populate(populate);
 
   Promise.all([count.exec(), all.exec()])
     .then((data) => {
