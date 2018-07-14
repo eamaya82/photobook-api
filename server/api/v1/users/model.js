@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcrypt-nodejs');
 
 const {
   Schema,
@@ -42,6 +43,23 @@ const fields = {
 const user = new Schema(fields, {
   timestamps: true,
 });
+
+user.methods.toJSON = function toJSON() {
+  const doc = this.toObject();
+  delete doc.password;
+  return doc;
+};
+
+user.pre('save', function save(next) {
+  if (this.isNew || this.isModified('password')) {
+    this.password = bcrypt.hashSync(this.password, bcrypt.genSalt());
+  }
+  next();
+});
+
+user.methods.verifyPassword = function verifyPassword(password) {
+  return bcrypt.compareSync(password, this.password);
+};
 
 module.exports = {
   Model: mongoose.model('user', user),
