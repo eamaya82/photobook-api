@@ -3,6 +3,7 @@ const config = require('./../config/');
 const {
   pagination,
   sort,
+  populate,
 } = config;
 
 const parsePaginationParams = ({
@@ -37,12 +38,6 @@ const compactSortToStr = (sortBy, direction) => {
   return `${dir}${sortBy}`;
 };
 
-// parans = { postId: 'abc123..'}
-
-// paramsNames = ['postId]
-// referencesName = ['userId', 'postId']
-// populateNames = {'user'}
-
 const filterByNested = (params, referencesNames) => {
   const paramsNames = Object.getOwnPropertyNames(params);
   const populateNames = referencesNames.filter(item => !paramsNames.includes(item));
@@ -53,9 +48,27 @@ const filterByNested = (params, referencesNames) => {
   };
 };
 
+const populateToObject = (populateNames, virtuals = {}) => {
+  const virtualsNames = Object.getOwnPropertyNames(virtuals);
+  return populateNames.map((item) => {
+    let options = {};
+    if (virtualsNames.includes(item)) {
+      options = {
+        limit: populate.virtuals.limit,
+        sort: compactSortToStr(populate.virtuals.sort, populate.virtuals.direction),
+      };
+    }
+    return {
+      path: item,
+      options,
+    };
+  });
+};
+
 module.exports = {
   parsePaginationParams,
   parseSortParams,
   compactSortToStr,
   filterByNested,
+  populateToObject,
 };

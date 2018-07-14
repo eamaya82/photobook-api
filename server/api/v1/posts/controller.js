@@ -2,14 +2,20 @@ const {
   Model,
   fields,
   references,
+  virtuals,
 } = require('./model');
 
-const referencesNames = Object.getOwnPropertyNames(references);
+const referencesNames = [
+  ...Object.getOwnPropertyNames(references),
+  ...Object.getOwnPropertyNames(virtuals),
+];
 
 const {
   parsePaginationParams,
   parseSortParams,
   compactSortToStr,
+  filterByNested,
+  populateToObject,
 } = require('./../../../utils/');
 
 exports.id = (req, res, next, id) => {
@@ -36,6 +42,7 @@ exports.id = (req, res, next, id) => {
 exports.all = (req, res, next) => {
   const {
     query,
+    params = {},
   } = req;
 
   const {
@@ -48,14 +55,19 @@ exports.all = (req, res, next) => {
     direction,
   } = parseSortParams(query, fields);
   const sort = compactSortToStr(sortBy, direction);
+  const {
+    filters,
+    populate,
+  } = filterByNested(params, referencesNames);
+  const populateObject = populateToObject(populate.split(' '), virtuals);
 
   const count = Model.count();
   const all = Model
-    .find()
+    .find(filters)
     .sort(sort)
     .skip(skip)
     .limit(limit)
-    .populate(referencesNames.join(' '));
+    .populate(populateObject);
 
   Promise.all([count.exec(), all.exec()])
     .then((data) => {

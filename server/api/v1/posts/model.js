@@ -31,10 +31,24 @@ const references = {
 
 const post = new Schema(Object.assign(fields, references), {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+  },
 });
+
+const virtuals = {
+  comments: {
+    ref: 'comment',
+    localField: '_id',
+    foreignField: 'postId',
+  },
+};
+
+post.virtual('comments', virtuals.comments);
 
 module.exports = {
   Model: mongoose.model('post', post),
   fields,
   references,
+  virtuals,
 };
