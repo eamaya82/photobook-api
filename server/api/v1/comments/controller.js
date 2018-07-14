@@ -90,7 +90,10 @@ exports.all = (req, res, next) => {
 exports.create = (req, res, next) => {
   const {
     body,
+    params,
   } = req;
+
+  Object.assign(body, params);
 
   const document = new Model(body);
   document.save()
@@ -121,9 +124,10 @@ exports.update = (req, res, next) => {
   const {
     doc,
     body,
+    params,
   } = req;
 
-  Object.assign(doc, body);
+  Object.assign(doc, body, params);
 
   doc.save()
     .then((updated) => {
